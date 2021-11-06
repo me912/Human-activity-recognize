@@ -1,0 +1,40 @@
+20:42:19 **** Incremental Build of configuration Debug for project lcdtest3 ****
+make -j8 all 
+make: Nothing to be done for 'all'.
+20:42:49 **** Incremental Build of configuration Debug for project lcdtest3 ****
+make -j8 all 
+make: Nothing to be done for 'all'.
+20:43:46 **** Incremental Build of configuration Debug for project lcdtest3 ****
+make -j8 all 
+Building file: ../Core/Src/main.c
+Invoking: MCU GCC Compiler
+C:\Users\LENOVO-PC\Documents\a\project1\test\workspace\lcdtest3\Debug
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -DUSE_HAL_DRIVER -DSTM32F411xE -I"C:/Users/LENOVO-PC/Documents/a/project1/test/workspace/lcdtest3/Core/Inc" -I"C:/Users/LENOVO-PC/Documents/a/project1/test/workspace/lcdtest3/Drivers/STM32F4xx_HAL_Driver/Inc" -I"C:/Users/LENOVO-PC/Documents/a/project1/test/workspace/lcdtest3/Drivers/STM32F4xx_HAL_Driver/Inc/Legacy" -I"C:/Users/LENOVO-PC/Documents/a/project1/test/workspace/lcdtest3/Drivers/CMSIS/Device/ST/STM32F4xx/Include" -I"C:/Users/LENOVO-PC/Documents/a/project1/test/workspace/lcdtest3/Drivers/CMSIS/Include"  -Og -g3 -Wall -fmessage-length=0 -ffunction-sections -c -fmessage-length=0 -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" -o "Core/Src/main.o" "../Core/Src/main.c"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:127:10: warning: unused variable 'len' [-Wunused-variable]
+  uint8_t len = 0;
+          ^~~
+../Core/Src/main.c: In function 'Update_Accel_Gyro_to_SSD1306':
+../Core/Src/main.c:192:12: warning: variable 'len' set but not used [-Wunused-but-set-variable]
+    uint8_t len;
+            ^~~
+Finished building: ../Core/Src/main.c
+ 
+Building target: lcdtest3.elf
+Invoking: MCU GCC Linker
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -specs=nosys.specs -specs=nano.specs -u _printf_float -T"../STM32F411RETx_FLASH.ld" -Wl,-Map=output.map -Wl,--gc-sections -o "lcdtest3.elf" @"objects.list"   -lm
+Finished building target: lcdtest3.elf
+ 
+make --no-print-directory post-build
+Generating hex and Printing size information:
+arm-none-eabi-objcopy -O ihex "lcdtest3.elf" "lcdtest3.hex"
+arm-none-eabi-size "lcdtest3.elf"
+   text	   data	    bss	    dec	    hex	filename
+  40464	    508	   3636	  44608	   ae40	lcdtest3.elf
+ 
+20:44:12 **** Incremental Build of configuration Debug for project lcdtest3 ****
+make -j8 all 
+make: Nothing to be done for 'all'.
+09:36:01 **** Incremental Build of configuration Debug for project lcdtest3 ****
+make -j8 all 
+make: Nothing to be done for 'all'.

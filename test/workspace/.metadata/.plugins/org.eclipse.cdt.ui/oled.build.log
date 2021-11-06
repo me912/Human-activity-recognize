@@ -1,0 +1,23 @@
+21:47:18 **** Incremental Build of configuration Debug for project oled ****
+make -j8 all 
+Building file: ../Src/main.c
+Invoking: MCU GCC Compiler
+C:\Users\LENOVO-PC\Documents\a\project1\test\workspace\oled\Debug
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -DUSE_HAL_DRIVER -DSTM32F411xE -I"C:/Users/LENOVO-PC/Documents/a/project1/test/workspace/oled/Inc" -I"C:/Users/LENOVO-PC/Documents/a/project1/test/workspace/oled/Drivers/STM32F4xx_HAL_Driver/Inc" -I"C:/Users/LENOVO-PC/Documents/a/project1/test/workspace/oled/Drivers/STM32F4xx_HAL_Driver/Inc/Legacy" -I"C:/Users/LENOVO-PC/Documents/a/project1/test/workspace/oled/Drivers/CMSIS/Device/ST/STM32F4xx/Include" -I"C:/Users/LENOVO-PC/Documents/a/project1/test/workspace/oled/Drivers/CMSIS/Include"  -Og -g3 -Wall -fmessage-length=0 -ffunction-sections -c -fmessage-length=0 -MMD -MP -MF"Src/main.d" -MT"Src/main.o" -o "Src/main.o" "../Src/main.c"
+Finished building: ../Src/main.c
+ 
+Building target: oled.elf
+Invoking: MCU G++ Linker
+arm-none-eabi-g++ -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -specs=nosys.specs -specs=nano.specs -T"../STM32F411RETx_FLASH.ld" -Wl,-Map=output.map -Wl,--gc-sections -fno-exceptions -fno-rtti -o "oled.elf" @"objects.list"   -lm
+Finished building target: oled.elf
+ 
+make --no-print-directory post-build
+Generating hex and Printing size information:
+arm-none-eabi-objcopy -O ihex "oled.elf" "oled.hex"
+arm-none-eabi-size "oled.elf"
+   text	   data	    bss	    dec	    hex	filename
+   9284	     20	   1724	  11028	   2b14	oled.elf
+ 
+
+21:47:20 Build Finished (took 2s.269ms)
+

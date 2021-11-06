@@ -1,0 +1,4 @@
+kalman.c:8:21:SimpleKalmanInit	56	static
+kalman.c:18:18:KalmanInit	208	static
+kalman.c:26:7:updateEstimate	32	static
+kalman.c:36:10:updateEstimateMPU	48	static

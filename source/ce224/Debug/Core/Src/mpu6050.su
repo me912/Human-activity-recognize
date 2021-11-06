@@ -1,0 +1,5 @@
+mpu6050.c:18:6:MPU_Init	256	static
+mpu6050.c:41:6:MPU_Read_Data	64	static
+mpu6050.c:63:6:MPU_Read_Kalman	80	static
+mpu6050.c:68:7:absolute	16	static
+mpu6050.c:71:6:CalculateAngle	24	static

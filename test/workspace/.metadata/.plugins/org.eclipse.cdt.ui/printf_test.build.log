@@ -1,0 +1,17 @@
+21:46:50 **** Incremental Build of configuration Debug for project printf_test ****
+make -j8 all 
+Building target: printf_test.elf
+Invoking: MCU G++ Linker
+arm-none-eabi-g++ -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -specs=nosys.specs -specs=nano.specs -T"../STM32F411RETx_FLASH.ld" -Wl,-Map=output.map -Wl,--gc-sections -fno-exceptions -fno-rtti -o "printf_test.elf" @"objects.list"   -lm
+Finished building target: printf_test.elf
+ 
+make --no-print-directory post-build
+Generating hex and Printing size information:
+arm-none-eabi-objcopy -O ihex "printf_test.elf" "printf_test.hex"
+arm-none-eabi-size "printf_test.elf"
+   text	   data	    bss	    dec	    hex	filename
+   9020	    120	   1656	  10796	   2a2c	printf_test.elf
+ 
+
+21:46:52 Build Finished (took 1s.889ms)
+

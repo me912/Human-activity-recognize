@@ -1,0 +1,6 @@
+21:27:51 **** Incremental Build of configuration Debug for project lcdtest ****
+make -j8 all 
+make: Nothing to be done for 'all'.
+
+21:27:51 Build Finished (took 625ms)
+
