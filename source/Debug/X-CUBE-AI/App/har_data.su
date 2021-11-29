@@ -1,0 +1,2 @@
+har_data.c:1324:11:ai_har_data_weights_get	4	static
+har_data.c:1343:9:ai_har_data_params_get	32	static

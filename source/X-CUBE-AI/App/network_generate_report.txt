@@ -1,0 +1,169 @@
+Neural Network Tools for STM32AI v1.5.1 (STM.ai v7.0.0-RC8)
+Created date          : 2021-11-19 11:35:20
+Parameters            : generate --name network -m C:/Users/LENOVO-PC/Downloads/modelv7 (2).h5 --type keras --compression 1 --verbosity 1 --workspace C:\Users\LENOVO~1\AppData\Local\Temp\mxAI_workspace9131697830560018073760595401025502 --output C:\Users\LENOVO-PC\.stm32cubemx
+
+Exec/report summary (generate)
+------------------------------------------------------------------------------------------------------------------------
+model file            : C:\Users\LENOVO-PC\Downloads\modelv7 (2).h5
+type                  : keras
+c_name                : network
+workspace dir         : C:\Users\LENOVO~1\AppData\Local\Temp\mxAI_workspace9131697830560018073760595401025502
+output dir            : C:\Users\LENOVO-PC\.stm32cubemx
+
+model_name            : modelv7_2
+model_hash            : 0b685d4e89a2ce5ad6cb0bf8fa253243
+input                 : input_0 [1152 items, 4.50 KiB, ai_float, float, (1, 128, 1, 9)]
+inputs (total)        : 4.50 KiB
+output                : dense_5_nl [6 items, 24 B, ai_float, float, (1, 1, 1, 6)]
+outputs (total)       : 24 B
+params #              : 10,126 items (39.55 KiB)
+macc                  : 584,116
+weights (ro)          : 41,104 B (40.14 KiB) / +600(+1.5%) vs original model
+activations (rw)      : 13,500 B (13.18 KiB) 
+ram (total)           : 18,132 B (17.71 KiB) = 13,500 + 4,608 + 24
+
+Model name - modelv7_2 ['input_0'] ['dense_5_nl']
+---------------------------------------------------------------------------------------------------------------------------------------
+id   layer (type)                 oshape          param/size     macc      connected to          |   c_size        c_macc   c_type    
+---------------------------------------------------------------------------------------------------------------------------------------
+0    input_0 (Input)              (h:128, c:9)                                                   |                         
+     lstm_4 (LSTM)                (t:128, c:25)   3,500/14,000   451,200   input_0               |   +300(+2.1%)            lstm()[0] 
+---------------------------------------------------------------------------------------------------------------------------------------
+1    average_pooling1d_4 (Pool)   (t:25, c:25)                   3,125     lstm_4                |                          pool()[1] 
+---------------------------------------------------------------------------------------------------------------------------------------
+2    lstm_5 (LSTM)                (c:25)          5,100/20,400   128,125   average_pooling1d_4   |   +300(+1.5%)            lstm()[2] 
+---------------------------------------------------------------------------------------------------------------------------------------
+3    flatten_1 (Reshape)          (c:25)                                   lstm_5                |                         
+---------------------------------------------------------------------------------------------------------------------------------------
+4    dense_3 (Dense)              (c:30)          780/3,120      780       flatten_1             |                          dense()[3]
+     dense_3_nl (Nonlinearity)    (c:30)                         30        dense_3               |                          nl()[4]   
+---------------------------------------------------------------------------------------------------------------------------------------
+6    dense_4 (Dense)              (c:20)          620/2,480      620       dense_3_nl            |                          dense()[5]
+     dense_4_nl (Nonlinearity)    (c:20)                         20        dense_4               |                          nl()[6]   
+---------------------------------------------------------------------------------------------------------------------------------------
+7    dense_5 (Dense)              (c:6)           126/504        126       dense_4_nl            |                          dense()[7]
+     dense_5_nl (Nonlinearity)    (c:6)                          90        dense_5               |                          nl()/o[8] 
+---------------------------------------------------------------------------------------------------------------------------------------
+model/c-model: macc=584,116/584,116  weights=40,504/41,104 +600(+1.5%) activations=--/13,500 io=--/4,632
+
+
+
+Generated C-graph summary
+------------------------------------------------------------------------------------------------------------------------
+model name            : modelv7_2
+c-name                : network
+c-node #              : 9
+c-array #             : 26
+activations size      : 13500
+weights size          : 41104
+macc                  : 584116
+inputs                : ['input_0_output']
+outputs               : ['dense_5_nl_output']
+
+
+
+C-Arrays (26)
+------------------------------------------------------------------------------------------------------------------------
+c_id  name (*_array)              item/size           mem-pool     c-type       fmt    comment            
+------------------------------------------------------------------------------------------------------------------------
+0     input_0_output              1152/4608           user         float        float  /input             
+1     lstm_4_output               3200/12800          activations  float        float                     
+2     average_pooling1d_4_output  625/2500            activations  float        float                     
+3     lstm_5_output               25/100              activations  float        float                     
+4     dense_3_output              30/120              activations  float        float                     
+5     dense_3_nl_output           30/120              activations  float        float                     
+6     dense_4_output              20/80               activations  float        float                     
+7     dense_4_nl_output           20/80               activations  float        float                     
+8     dense_5_output              6/24                activations  float        float                     
+9     dense_5_nl_output           6/24                user         float        float  /output            
+10    lstm_4_kernel               900/3600            weights      const float  float                     
+11    lstm_4_recurrent            2500/10000          weights      const float  float                     
+12    lstm_4_peephole             75/300              weights      const float  float                     
+13    lstm_4_bias                 100/400             weights      const float  float                     
+14    lstm_5_kernel               2500/10000          weights      const float  float                     
+15    lstm_5_recurrent            2500/10000          weights      const float  float                     
+16    lstm_5_peephole             75/300              weights      const float  float                     
+17    lstm_5_bias                 100/400             weights      const float  float                     
+18    dense_3_weights             750/3000            weights      const float  float                     
+19    dense_3_bias                30/120              weights      const float  float                     
+20    dense_4_weights             600/2400            weights      const float  float                     
+21    dense_4_bias                20/80               weights      const float  float                     
+22    dense_5_weights             120/480             weights      const float  float                     
+23    dense_5_bias                6/24                weights      const float  float                     
+24    lstm_4_scratch0             175/700             activations  float        float                     
+25    lstm_5_scratch0             175/700             activations  float        float                     
+------------------------------------------------------------------------------------------------------------------------
+
+
+
+C-Layers (9)
+------------------------------------------------------------------------------------------------------------------------
+c_id  name (*_layer)       id  layer_ macc        rom         tensors                        shape (array id)                       
+------------------------------------------------------------------------------------------------------------------------
+0     lstm_4               0   lstm   451200      14300       I: input_0_output              (1, 128, 1, 9) (0)                     
+                                                              S: lstm_4_scratch0                                                    
+                                                              W: lstm_4_kernel                                                      
+                                                              W: lstm_4_recurrent                                                   
+                                                              W: lstm_4_peephole                                                    
+                                                              W: lstm_4_bias                                                        
+                                                              O: lstm_4_output               (1, 128, 1, 25) (1)                    
+------------------------------------------------------------------------------------------------------------------------
+1     average_pooling1d_4  1   pool   3125        0           I: lstm_4_output               (1, 128, 1, 25) (1)                    
+                                                              O: average_pooling1d_4_output  (1, 25, 1, 25) (2)                     
+------------------------------------------------------------------------------------------------------------------------
+2     lstm_5               2   lstm   128125      20700       I: average_pooling1d_4_output  (1, 25, 1, 25) (2)                     
+                                                              S: lstm_5_scratch0                                                    
+                                                              W: lstm_5_kernel                                                      
+                                                              W: lstm_5_recurrent                                                   
+                                                              W: lstm_5_peephole                                                    
+                                                              W: lstm_5_bias                                                        
+                                                              O: lstm_5_output               (1, 1, 1, 25) (3)                      
+------------------------------------------------------------------------------------------------------------------------
+3     dense_3              4   dense  780         3120        I: lstm_5_output               (1, 1, 1, 25) (3)                      
+                                                              W: dense_3_weights                                                    
+                                                              W: dense_3_bias                                                       
+                                                              O: dense_3_output              (1, 1, 1, 30) (4)                      
+------------------------------------------------------------------------------------------------------------------------
+4     dense_3_nl           4   nl     30          0           I: dense_3_output              (1, 1, 1, 30) (4)                      
+                                                              O: dense_3_nl_output           (1, 1, 1, 30) (5)                      
+------------------------------------------------------------------------------------------------------------------------
+5     dense_4              6   dense  620         2480        I: dense_3_nl_output           (1, 1, 1, 30) (5)                      
+                                                              W: dense_4_weights                                                    
+                                                              W: dense_4_bias                                                       
+                                                              O: dense_4_output              (1, 1, 1, 20) (6)                      
+------------------------------------------------------------------------------------------------------------------------
+6     dense_4_nl           6   nl     20          0           I: dense_4_output              (1, 1, 1, 20) (6)                      
+                                                              O: dense_4_nl_output           (1, 1, 1, 20) (7)                      
+------------------------------------------------------------------------------------------------------------------------
+7     dense_5              7   dense  126         504         I: dense_4_nl_output           (1, 1, 1, 20) (7)                      
+                                                              W: dense_5_weights                                                    
+                                                              W: dense_5_bias                                                       
+                                                              O: dense_5_output              (1, 1, 1, 6) (8)                       
+------------------------------------------------------------------------------------------------------------------------
+8     dense_5_nl           7   nl     90          0           I: dense_5_output              (1, 1, 1, 6) (8)                       
+                                                              O: dense_5_nl_output           (1, 1, 1, 6) (9)                       
+------------------------------------------------------------------------------------------------------------------------
+
+
+
+Complexity report per layer - macc=584,116 weights=41,104 act=13,500 ram_io=4,632
+------------------------------------------------------------------------------------
+id   name                  c_macc                    c_rom                     c_id
+------------------------------------------------------------------------------------
+0    lstm_4                ||||||||||||||||  77.2%   |||||||||||       34.8%   [0] 
+1    average_pooling1d_4   |                  0.5%   |                  0.0%   [1] 
+2    lstm_5                |||||             21.9%   ||||||||||||||||  50.4%   [2] 
+4    dense_3               |                  0.1%   |||                7.6%   [3] 
+4    dense_3_nl            |                  0.0%   |                  0.0%   [4] 
+6    dense_4               |                  0.1%   ||                 6.0%   [5] 
+6    dense_4_nl            |                  0.0%   |                  0.0%   [6] 
+7    dense_5               |                  0.0%   |                  1.2%   [7] 
+7    dense_5_nl            |                  0.0%   |                  0.0%   [8] 
+
+Generated files (5)
+----------------------------------------------------------
+C:\Users\LENOVO-PC\.stm32cubemx\network_config.h
+C:\Users\LENOVO-PC\.stm32cubemx\network.h
+C:\Users\LENOVO-PC\.stm32cubemx\network.c
+C:\Users\LENOVO-PC\.stm32cubemx\network_data.h
+C:\Users\LENOVO-PC\.stm32cubemx\network_data.c

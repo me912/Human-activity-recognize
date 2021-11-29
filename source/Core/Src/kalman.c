@@ -7,8 +7,7 @@
 #include "kalman.h"
 struct SimpleKalman SimpleKalmanInit(float mea_e, float est_e, float q)
 {
-struct SimpleKalman myFilter;
-
+  struct SimpleKalman myFilter;
   myFilter._err_measure=mea_e;
   myFilter._err_estimate=est_e;
   myFilter._q = q;

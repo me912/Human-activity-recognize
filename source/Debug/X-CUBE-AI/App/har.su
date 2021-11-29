@@ -1,0 +1,10 @@
+har.c:562:9:har_configure_activations	24	static
+har.c:605:9:har_configure_weights	24	static
+har.c:667:9:ai_har_get_info	136	static
+har.c:712:9:ai_har_get_report	136	static
+har.c:758:10:ai_har_get_error	16	static
+har.c:764:10:ai_har_create	24	static
+har.c:774:11:ai_har_destroy	16	static
+har.c:780:9:ai_har_init	24	static
+har.c:797:8:ai_har_run	24	static
+har.c:804:8:ai_har_forward	16	static
