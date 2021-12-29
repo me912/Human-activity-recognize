@@ -17,8 +17,7 @@
 #define  GM				9.8
 #define 	data_cycle 	10
 #define 	count_delay 300
-#define 	K			0.7
-
+#define 	K			2
 CRC_HandleTypeDef hcrc;
 
 I2C_HandleTypeDef hi2c1;
@@ -28,7 +27,7 @@ UART_HandleTypeDef huart2;
 /* Definitions for GetValue */
 osThreadId_t GetValueHandle;
 const osThreadAttr_t GetValue_attributes = { .name = "GetValue", .stack_size =
-		128 * 4, .priority = (osPriority_t) osPriorityHigh, };
+		128 * 4 * 8, .priority = (osPriority_t) osPriorityHigh, };
 /* Definitions for RunNeural */
 osThreadId_t RunNeuralHandle;
 const osThreadAttr_t RunNeural_attributes = { .name = "RunNeural", .stack_size =
@@ -36,7 +35,7 @@ const osThreadAttr_t RunNeural_attributes = { .name = "RunNeural", .stack_size =
 /* Definitions for CountStep */
 osThreadId_t CountStepHandle;
 const osThreadAttr_t CountStep_attributes = { .name = "CountStep", .stack_size =
-		128 * 4, .priority = (osPriority_t) osPriorityNormal, };
+		128 * 4 * 4, .priority = (osPriority_t) osPriorityHigh, };
 /* Definitions for ValueQueue */
 osMessageQueueId_t ValueQueueHandle;
 const osMessageQueueAttr_t ValueQueue_attributes = { .name = "ValueQueue" };
@@ -63,10 +62,14 @@ void StartTask03(void *argument);
 void printresult(float *y_val);
 void MutexAcquire(osMutexId_t *mutex);
 void MutexRelease(osMutexId_t *mutex);
+void debug(Har_InputTypeDef *newItem);
+void DisplayStep(int stepcount, float step_length);
+int max_index(float *y_val);
 
 char buf[500];
 int buf_len = 0;
 float window_data[WINDOW_SIZE];
+int current_predict;
 
 // Buffers used to store input and output tensors
 AI_ALIGNED(4) ai_i8 in_data[AI_HAR_IN_1_SIZE_BYTES] = { 0 };
@@ -79,13 +82,14 @@ ai_handle har_model = AI_HANDLE_NULL;
 // data (tensor height, width, channels)
 ai_buffer ai_input[AI_HAR_IN_NUM] = AI_HAR_IN;
 ai_buffer ai_output[AI_HAR_OUT_NUM] = AI_HAR_OUT;
-
+float y_val[6];
+int step_count = 0;
+double step_length = 0;
 int main(void) {
 	ai_error ai_err;
 	ai_i32 nbatch;
 	uint32_t timestamp;
 	//Har_InputTypeDef *mpudata = (Har_InputTypeDef*) malloc(sizeof(Har_InputTypeDef)); //newest input sensor
-	float *y_val = (float*) malloc(6 * sizeof(float));
 
 	AI_ALIGNED(4) ai_u8 activations[AI_HAR_DATA_ACTIVATIONS_SIZE];
 
@@ -172,7 +176,7 @@ int main(void) {
 
 	/* Create the semaphores(s) */
 	/* creation of ValueReady */
-	ValueReadyHandle = osSemaphoreNew(32, 32, &ValueReady_attributes);
+	ValueReadyHandle = osSemaphoreNew(1, 0, &ValueReady_attributes);
 
 	/* USER CODE BEGIN RTOS_SEMAPHORES */
 	/* add semaphores, ... */
@@ -222,7 +226,11 @@ int main(void) {
 	}
 	/* USER CODE END 3 */
 }
+void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *hi2c) {
+	buf_len = sprintf(buf, "I2C error!");
+	HAL_UART_Transmit(&huart2, buf, buf_len, 100);
 
+}
 /**
  * @brief System Clock Configuration
  * @retval None
@@ -400,12 +408,44 @@ static void MX_GPIO_Init(void) {
 /* USER CODE END Header_StartTask1 */
 void StartTask1(void *argument) {
 	Har_InputTypeDef mpudata;
+	int i = 0;
+	volatile double max_mag = 0;
+	volatile double min_mag = 1000;
+	double prev_mag = 1;
+	double curr_mag = 0;
+	double sum = 0;
+	volatile int dem = 0;
 	for (;;) {
+		dem++;
 		MPU_Read_Data_forHAR(&mpudata);
+		if (i++ % 50 == 0) {
+			debug(&mpudata);
+		}
 		MutexAcquire(&Neural_permitHandle);
 		osMessageQueuePut(ValueQueueHandle, &mpudata, NULL, 0);
 		MutexRelease(&Neural_permitHandle);
-		osDelay(data_cycle);
+		curr_mag = MPU_mag2(&mpudata);
+		sum += fabs((double) curr_mag);
+		if (max_mag < curr_mag)
+			max_mag = curr_mag;
+		if (min_mag > curr_mag)
+			min_mag = curr_mag;
+		if (curr_mag > 12.0/ 9.8 && current_predict <= 2) {
+			if(dem > 10)
+			{
+			step_count++;
+			step_length += K * (sum / dem - min_mag) / (max_mag - min_mag);
+			buf_len = sprintf(buf, "Step count = %d\r\nStep length: %f\r\n",
+					step_count, step_length);
+			HAL_UART_Transmit(&huart2, buf, buf_len, 100);
+			min_mag = 10000;
+			max_mag = -1;
+			sum = 0;
+			dem = 0;
+			}
+		}
+		prev_mag = curr_mag;
+		osDelay(20);
 	}
 	/* USER CODE END 5 */
 }
@@ -419,7 +459,6 @@ void StartTask1(void *argument) {
 /* USER CODE END Header_StartTask02 */
 void StartTask02(void *argument) {
 	ai_i32 nbatch;
-	float *y_val = (float*) malloc(6 * sizeof(float));
 	Har_InputTypeDef data;
 	for (;;) {
 		MutexAcquire(&Neural_permitHandle);
@@ -442,9 +481,11 @@ void StartTask02(void *argument) {
 			buf_len = sprintf(buf, "Error: could not run inference\r\n");
 			HAL_UART_Transmit(&huart2, (uint8_t*) buf, buf_len, 100);
 		}
-		y_val = ((float*) out_data);
-		printresult(y_val);
-		osDelay(500);
+		memcpy(y_val, out_data, sizeof(float)*6);
+
+		//printresult(y_val);
+		current_predict = max_index(y_val);
+		osDelay(200);
 	}
 	/* USER CODE END StartTask02 */
 }
@@ -457,29 +498,9 @@ void StartTask02(void *argument) {
  */
 /* USER CODE END Header_StartTask03 */
 void StartTask03(void *argument) {
-	int step_count = 0;
-	double step_length = 0;
 	for (;;) {
-		double max_mag = 0;
-		double min_mag = 0;
-		double sum = 0;
-		for (int i = 0; i < count_delay/(data_cycle); i++) {
-			window_data[i] = MPU_Mag(
-					(MPU_DATA*) (&((Har_InputTypeDef*) in_data)[i]));
-			sum += fabs((double) window_data[i]);
-			if (max_mag < window_data[i])
-				max_mag = window_data[i];
-			if (min_mag > window_data[i])
-				min_mag = window_data[i];
-		}
-		if (max_mag > MAG_THERSHOLD) {
-			step_count++;
-			step_length += GM * K * (sum / WINDOW_SIZE - min_mag)
-					/ (max_mag - min_mag);
-			buf_len = sprintf(buf, "step_length: %f\r\n", step_length);
-			HAL_UART_Transmit(&huart2, buf, buf_len, 100);
-		}
-		osDelay(count_delay);
+		DisplayStep(step_count, step_length);
+		osDelay(1500);
 	}
 	/* USER CODE END StartTask03 */
 }
@@ -502,18 +523,23 @@ float gravitystatic(void) {
 
 }
 
+int max_index(float *y_val){
+	volatile int max_index = 0;
+		for (int i = 0; i < 6; i++) {
+			if (y_val[max_index] < y_val[i])
+				max_index = i;
+		}
+	return max_index;
+}
+
 void printresult(float *y_val) {
 	volatile int max_index = 0;
-	static volatile int max_indexold = 0;
 	for (int i = 0; i < 6; i++) {
 		if (y_val[max_index] < y_val[i])
 			max_index = i;
 	}
-	if (max_index == max_indexold)
-		return;
 
 	buf_len = sprintf(buf, "Output: ");
-	SSD1306_Clear();
 	SSD1306_GotoXY(0, 0);
 	SSD1306_Puts(buf, &Font_7x10, 1);
 	switch (max_index) {
@@ -542,7 +568,6 @@ void printresult(float *y_val) {
 	SSD1306_GotoXY(0, 12);
 	SSD1306_Puts(buf, &Font_7x10, 1);
 	SSD1306_UpdateScreen();
-	max_indexold = max_index;
 }
 
 void MutexAcquire(osMutexId_t *mutex) {
@@ -552,7 +577,31 @@ void MutexAcquire(osMutexId_t *mutex) {
 		HAL_UART_Transmit(&huart2, buf, buf_len, 5);
 	}
 }
+void debug(Har_InputTypeDef *newItem) {
+	buf_len = sprintf(buf, "(%f, %f, %f, %f, %f, %f, %f, %f, %f)\r\n", newItem->total_acc_x,
+			newItem->total_acc_y, newItem->total_acc_z, newItem->body_gyro_x,
+			newItem->body_gyro_y, newItem->body_gyro_z, newItem->body_acc_x, newItem->body_acc_y, newItem->body_acc_z);
+	HAL_UART_Transmit(&huart2, buf, buf_len, 10);
+}
+void DisplayStep(int stepcount, float step_length) {
+	SSD1306_Clear();
+	buf_len = sprintf(buf, "Step count: %d", stepcount);
+	SSD1306_GotoXY(0, 24);
+	SSD1306_Puts(buf, &Font_7x10, 1);
+	SSD1306_UpdateScreen();
 
+	buf_len = sprintf(buf, "Total step length:", step_length);
+	SSD1306_GotoXY(0, 36);
+	SSD1306_Puts(buf, &Font_7x10, 1);
+	SSD1306_UpdateScreen();
+
+	buf_len = sprintf(buf, "%f", step_length);
+		SSD1306_GotoXY(0, 48);
+		SSD1306_Puts(buf, &Font_7x10, 1);
+		SSD1306_UpdateScreen();
+
+	printresult(y_val);
+}
 void MutexRelease(osMutexId_t *mutex) {
 	osStatus status = osMutexRelease(*mutex);
 	if (status != osOK) {

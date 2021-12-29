@@ -1,0 +1,67 @@
+﻿1
+00:00:00,000 --> 00:00:05,440
+Đầu tiên, thử nghiệm khả năng nhận diện loại hoạt động "LAYING"
+
+2
+00:00:05,690 --> 00:00:13,200
+Mô phỏng tư thế nằm của người dùng bằng cách đặt hệ thống lên trên mặt phẳng.
+
+3
+00:00:13,620 --> 00:00:19,990
+Nhìn chung, khả năng nhận diện lớp "LAYING" đạt kết quả khá tốt.
+
+4
+00:00:20,080 --> 00:00:27,640
+Bởi vì dữ liệu của lớp này có tính chất khác rất khác so với các lớp còn lại
+
+5
+00:00:27,850 --> 00:00:36,260
+Chuyển qua thử nghiệm lớp "SITTING".
+
+6
+00:00:37,950 --> 00:00:47,540
+Tương tự, mô phỏng tư thế ngồi của người dùng bằng cách đặt thẳng đứng hệ thống.
+
+7
+00:00:47,740 --> 00:00:54,100
+Và khả năng nhận diện lớp "SITTING" vẫn khá tốt. 
+
+8
+00:00:56,410 --> 00:01:00,970
+Chuyển qua thử nghiệm các lớp "WALKING", "WALKING_UP", "WALKING_DOWN" và "STANDING". Cùng khả năng detect bước chân.
+
+9
+00:01:02,070 --> 00:01:08,070
+Khởi động hệ thống, chờ ổn định.
+
+10
+00:01:09,560 --> 00:01:13,980
+Khi thực hiện di chuyển thì model đã nhận dạng được lớp "WALKING". Cũng như đếm được số bước chân.
+
+11
+00:01:14,170 --> 00:01:21,830
+Tuy vậy, model lại gặp khó khăn trong việc detect giữa 3 lớp "WALKING", "WALKING_UP", "WALKING_DOWN".
+
+12
+00:01:23,460 --> 00:01:29,830
+Về khả năng detect bước chân thì khá ổn, mặc dù lượng bước chân đếm được thấp hơn thực tế.
+
+13
+00:01:30,770 --> 00:01:39,820
+Có thể nhận thấy dù đang "STANDING" mà mô hình vẫn nhầm lẫn là "SITTING". Giữa 2 lớp này có sự tương đồng về dữ liệu nên khả năng detect là không cao.
+
+14
+00:01:41,510 --> 00:01:48,720
+Dù đang bước đi trên mặt phẳng nhưng mô hình nhầm lẫn sang lớp "WALKING UP" nhiều lần.
+
+15
+00:01:48,940 --> 00:02:02,030
+Có thể một phần do môi trường lấy mẫu để training khác so với lúc thử nghiệm. Hoặc khác vị trí đeo thiết bị.
+
+16
+00:02:02,460 --> 00:02:08,830
+Kết luận: hệ thống cần cải tiến thêm trước khi sử dụng được.
+
+17
+00:02:10,100 --> 00:02:19,150
+Cám ơn thầy đã theo dõi.

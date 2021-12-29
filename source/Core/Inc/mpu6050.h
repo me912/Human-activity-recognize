@@ -30,7 +30,7 @@
 
 
 #define sample_rate 50.0
-#define cutoff		1.0
+#define cutoff		0.3
 #ifndef M_PI
 #define M_PI (3.14159265359)
 #endif
@@ -66,4 +66,5 @@ void MPU_Read_Data(MPU_DATA *data);
 void MPU_Read_Kalman(MPU_DATA *data);
 void MPU_Read_Data_forHAR(Har_InputTypeDef *data);
 float MPU_Mag(MPU_DATA *Mpu_data);
+float MPU_mag2(Har_InputTypeDef *mpudata);
 #endif /* INC_MPU6050_H_ */

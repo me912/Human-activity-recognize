@@ -54,8 +54,11 @@ void MPU_Read_Data(MPU_DATA *Mpu_data) {
 	uint8_t Rec[14];
 	static MPU_DATA last={0};
 	//HAL_I2C_Mem_Read(&hi2c1, MPU_ADDR << 1, INT_STATUS, I2C_MEMADD_SIZE_8BIT, Rec, 1, 50);
-	HAL_I2C_Mem_Read(&hi2c1, MPU_ADDR << 1, ACCEL_XOUT_H_REG, I2C_MEMADD_SIZE_8BIT, Rec, 14, 5);
-
+	HAL_StatusTypeDef check = HAL_I2C_Mem_Read(&hi2c1, MPU_ADDR << 1, ACCEL_XOUT_H_REG, I2C_MEMADD_SIZE_8BIT, Rec, 14, 2);
+	if(check != HAL_OK){
+		*Mpu_data = last;
+		return;
+	}
 	int16_t volatile Accel_X_RAW = (int16_t) ((int16_t) Rec[0] << 8 | Rec[1]);
 	int16_t volatile Accel_Y_RAW = (int16_t) ((int16_t) Rec[2] << 8 | Rec[3]);
 	int16_t volatile Accel_Z_RAW = (int16_t) ((int16_t) Rec[4] << 8 | Rec[5]);
@@ -72,9 +75,8 @@ void MPU_Read_Data(MPU_DATA *Mpu_data) {
 	Mpu_data->Gyro_y = (Gyro_Y_RAW / gyro_prescaler) * degtopi;
 	Mpu_data->Gyro_z = (Gyro_Z_RAW / gyro_prescaler) * degtopi;
 
-	last.Accel_x = Mpu_data->Accel_x;
-	last.Accel_y = Mpu_data->Accel_y;
-	last.Accel_z = Mpu_data->Accel_z;
+	last = *Mpu_data;
+
 
 	return;
 }
@@ -108,4 +110,8 @@ float MPU_Mag(MPU_DATA *Mpu_data){
 	volatile float temp = Mpu_data->Accel_x*Mpu_data->Accel_x + Mpu_data->Accel_y*Mpu_data->Accel_y + Mpu_data->Accel_z*Mpu_data->Accel_z;
 	volatile float temp2 = updateEstimate(&myKalman, sqrtf(temp));
 	return temp2;
+}
+float MPU_mag2(Har_InputTypeDef *mpudata){
+	float temp = mpudata->total_acc_x*mpudata->total_acc_x + mpudata->total_acc_y*mpudata->total_acc_y + mpudata->total_acc_z*mpudata->total_acc_z;
+	return sqrtf(temp);
 }

@@ -1,5 +1,6 @@
 mpu6050.c:19:6:MPU_Init	64	static
-mpu6050.c:53:6:MPU_Read_Data	64	static
-mpu6050.c:82:6:MPU_Read_Kalman	80	static
-mpu6050.c:88:6:MPU_Read_Data_forHAR	24	static
-mpu6050.c:107:7:MPU_Mag	24	static
+mpu6050.c:53:6:MPU_Read_Data	72	static
+mpu6050.c:84:6:MPU_Read_Kalman	80	static
+mpu6050.c:90:6:MPU_Read_Data_forHAR	24	static
+mpu6050.c:109:7:MPU_Mag	24	static
+mpu6050.c:114:7:MPU_mag2	24	static
